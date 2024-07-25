@@ -1,17 +1,18 @@
 defmodule Servy.Plugins do
+  alias Servy.Conv
   @doc "Logs 404 requests"
-  def track(%{status: 404, path: path} = conv) do
+  def track(%Conv{status: 404, path: path} = conv) do
     IO.puts("Warning: #{path} is on the loose!")
     conv
   end
 
-  def track(conv), do: conv
+  def track(%Conv{} = conv), do: conv
 
-  def rewrite_path(%{path: "/wildlife"} = conv) do
-    %{conv | path: "/wildthings"}
+  def rewrite_path(%Conv{path: "/wildlife"} = conv) do
+    %Conv{conv | path: "/wildthings"}
   end
 
-  def rewrite_path(conv), do: conv
+  def rewrite_path(%Conv{} = conv), do: conv
 
-  def log(conv), do: IO.inspect(conv, label: "Log: ")
+  def log(%Conv{} = conv), do: IO.inspect(conv, label: "Log: ")
 end

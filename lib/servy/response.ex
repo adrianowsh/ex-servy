@@ -1,5 +1,7 @@
 defmodule Servy.Response do
-  def format_response(%{status: status, resp_body: body}) do
+  alias Servy.Conv
+
+  def format_response(%Conv{status: status, resp_body: body}) do
     """
     HTTP/1.1 #{status} #{status_reason(status)}
     Content-Type: text/html
