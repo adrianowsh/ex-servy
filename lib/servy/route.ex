@@ -1,34 +1,41 @@
 defmodule Servy.Route do
   @pages_path Path.expand("../../lib/pages", __DIR__)
+
+  alias Servy.Conv
+
   def route(%{method: "GET", path: "/wildthings"} = conv) do
-    %{conv | status: 200, resp_body: "Bear, Lions, Tigers"}
+    %Conv{conv | status: 200, resp_body: "Bear, Lions, Tigers"}
   end
 
-  def route(%{method: "GET", path: "/bears"} = conv) do
-    %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+    %Conv{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(%{method: "GET", path: "/bears" <> id} = conv) do
-    %{conv | status: 200, resp_body: "Bears #{id} "}
+  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+    %Conv{conv | status: 201, resp_body: "Create a bear!"}
   end
 
-  def route(%{method: "GET", path: "/about"} = conv) do
+  def route(%Conv{method: "GET", path: "/bears" <> id} = conv) do
+    %Conv{conv | status: 200, resp_body: "Bears #{id} "}
+  end
+
+  def route(%Conv{method: "GET", path: "/about"} = conv) do
     @pages_path
     |> Path.join("about.html")
     |> File.read()
     |> handle_file(conv)
   end
 
-  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
-    %{conv | status: 403, resp_body: "Bears must never be deleted!"}
+  def route(%Conv{method: "DELETE", path: "/bears/" <> _id} = conv) do
+    %Conv{conv | status: 403, resp_body: "Bears must never be deleted!"}
   end
 
-  def route(%{method: _method, path: path} = conv) do
-    %{conv | status: 404, resp_body: "No #{path} gere!"}
+  def route(%Conv{method: _method, path: path} = conv) do
+    %Conv{conv | status: 404, resp_body: "No #{path} gere!"}
   end
 
   defp handle_file({:ok, content}, conv),
-    do: %{conv | status: 200, resp_body: content}
+    do: %Conv{conv | status: 200, resp_body: content}
 
   defp handle_file({:error, :enoent}, conv),
     do: %{conv | status: 404, resp_body: "File not found"}
