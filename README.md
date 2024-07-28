@@ -1,7 +1,7 @@
 # Servy
 ![Servy CI](https://github.com/adrianowsh/ex-servy/actions/workflows/elixir.yml/badge.svg)
 
-**TODO: Add description**
+**Handles HTTP requests.**
 
 ## Installation
 
