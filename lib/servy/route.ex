@@ -6,7 +6,7 @@ defmodule Servy.Route do
   alias Servy.Conv
 
   def route(%{method: "GET", path: "/wildthings"} = conv) do
-    %Conv{conv | status: 200, resp_body: "Bear, Lions, Tigers"}
+    %Conv{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
