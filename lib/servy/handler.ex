@@ -2,7 +2,7 @@ defmodule Servy.Handler do
   @moduledoc "Handles HTTP requests."
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
-  import Servy.Route, only: [route: 1]
+  import Servy.Route
   import Servy.Parser, only: [parse: 1]
   import Servy.Response, only: [format_response: 1]
   @doc " Transforms the request into a response"
@@ -11,8 +11,8 @@ defmodule Servy.Handler do
     |> parse
     |> rewrite_path
     |> log
-    |> route
     |> track
+    |> route
     |> format_response
   end
 end

@@ -13,7 +13,7 @@ defmodule Servy.Route do
     BearController.index(conv)
   end
 
-  def route(%Conv{method: "GET", path: "/bears" <> id} = conv) do
+  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
     params = Map.put(conv.params, "id", id)
     BearController.show(conv, params)
   end
@@ -30,7 +30,7 @@ defmodule Servy.Route do
   end
 
   def route(%Conv{method: "DELETE", path: "/bears/" <> _id} = conv) do
-    %Conv{conv | status: 403, resp_body: "Bears must never be deleted!"}
+    BearController.delete(conv)
   end
 
   def route(%Conv{method: _method, path: path} = conv) do
