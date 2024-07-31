@@ -2,11 +2,15 @@ defmodule Servy.Route do
   @pages_path Path.expand("../../lib/pages", __DIR__)
 
   alias Servy.BearController
-
+  alias Servy.Api.BearController, as: Api
   alias Servy.Conv
 
   def route(%{method: "GET", path: "/wildthings"} = conv) do
     %Conv{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
+  end
+
+  def route(%Conv{method: "GET", path: "/api/bears"} = conv) do
+    Api.index(conv)
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
