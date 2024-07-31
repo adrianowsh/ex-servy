@@ -5,6 +5,16 @@ defmodule Servy.Route do
   alias Servy.Api.BearController, as: Api
   alias Servy.Conv
 
+  def route(%{method: "GET", path: "/kaboom"}) do
+    raise "Kaboom!"
+  end
+
+  def route(%{method: "GET", path: "/hibernate/" <> time} = conv) do
+    time |> String.to_integer() |> :timer.sleep()
+
+    %Conv{conv | status: 200, resp_body: "Awake!"}
+  end
+
   def route(%{method: "GET", path: "/wildthings"} = conv) do
     %Conv{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
@@ -38,7 +48,7 @@ defmodule Servy.Route do
   end
 
   def route(%Conv{method: _method, path: path} = conv) do
-    %Conv{conv | status: 404, resp_body: "No #{path} gere!"}
+    %Conv{conv | status: 404, resp_body: "No #{path} here!"}
   end
 
   defp handle_file({:ok, content}, conv),
