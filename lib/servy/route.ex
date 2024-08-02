@@ -2,6 +2,7 @@ defmodule Servy.Route do
   @pages_path Path.expand("../../lib/pages", __DIR__)
 
   alias Servy.VideoCam
+  alias Servy.Fetcher
   alias Servy.BearController
   alias Servy.Api.BearController, as: Api
   alias Servy.Conv
@@ -10,30 +11,33 @@ defmodule Servy.Route do
     raise "Kaboom!"
   end
 
+  def route(%{method: "GET", path: "/sensors"} = conv) do
+    pid_1 = Fetcher.async(fn -> VideoCam.get_snapshot("cam-1") end)
+    pid_2 = Fetcher.async(fn -> VideoCam.get_snapshot("cam-2") end)
+    pid_3 = Fetcher.async(fn -> VideoCam.get_snapshot("cam-3") end)
+    pid_4 = Fetcher.async(fn -> Servy.Tracker.get_location("bigfoot") end)
+
+    gps_bigfoot = Fetcher.get_result(pid_4)
+    snapshot1 = Fetcher.get_result(pid_1)
+    snapshot2 = Fetcher.get_result(pid_2)
+    snapshot3 = Fetcher.get_result(pid_3)
+
+    snapshots = [snapshot1, snapshot2, snapshot3]
+
+    %Conv{conv | status: 200, resp_body: inspect({snapshots, gps_bigfoot})}
+  end
+
   def route(%{method: "GET", path: "/snapshots"} = conv) do
     parent = self()
+    IO.inspect(parent, label: "Process of Servy.Route")
 
-    # the request-handling process
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end)
-    # snapshot2 = spawn(fn -> VideoCam.get_snapshot("cam-2") end)
-    # snapshot3 = spawn(fn -> VideoCam.get_snapshot("cam-3") end)
+    pid_1 = Fetcher.async(fn -> VideoCam.get_snapshot("cam-1") end)
+    pid_2 = Fetcher.async(fn -> VideoCam.get_snapshot("cam-2") end)
+    pid_3 = Fetcher.async(fn -> VideoCam.get_snapshot("cam-3") end)
 
-    snapshot1 =
-      receive do
-        {:result, filename} -> filename
-      end
-
-    snapshot2 =
-      receive do
-        {:result, filename} -> filename
-      end
-
-    snapshot3 =
-      receive do
-        {:result, filename} -> filename
-      end
+    snapshot1 = Fetcher.get_result(pid_1)
+    snapshot2 = Fetcher.get_result(pid_2)
+    snapshot3 = Fetcher.get_result(pid_3)
 
     snapshots = [snapshot1, snapshot2, snapshot3]
 
