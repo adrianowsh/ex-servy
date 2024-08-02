@@ -1,6 +1,7 @@
 defmodule Servy.Route do
   @pages_path Path.expand("../../lib/pages", __DIR__)
 
+  alias Servy.VideoCam
   alias Servy.BearController
   alias Servy.Api.BearController, as: Api
   alias Servy.Conv
@@ -9,10 +10,34 @@ defmodule Servy.Route do
     raise "Kaboom!"
   end
 
-  def route(%{method: "GET", path: "/hibernate/" <> time} = conv) do
-    time |> String.to_integer() |> :timer.sleep()
+  def route(%{method: "GET", path: "/snapshots"} = conv) do
+    parent = self()
 
-    %Conv{conv | status: 200, resp_body: "Awake!"}
+    # the request-handling process
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end)
+    # snapshot2 = spawn(fn -> VideoCam.get_snapshot("cam-2") end)
+    # snapshot3 = spawn(fn -> VideoCam.get_snapshot("cam-3") end)
+
+    snapshot1 =
+      receive do
+        {:result, filename} -> filename
+      end
+
+    snapshot2 =
+      receive do
+        {:result, filename} -> filename
+      end
+
+    snapshot3 =
+      receive do
+        {:result, filename} -> filename
+      end
+
+    snapshots = [snapshot1, snapshot2, snapshot3]
+
+    %Conv{conv | status: 200, resp_body: inspect(snapshots)}
   end
 
   def route(%{method: "GET", path: "/wildthings"} = conv) do
