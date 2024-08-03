@@ -6,7 +6,7 @@ defmodule Servy.PledgeServer do
     Servy.GenericServer.start(__MODULE__, [], @name)
   end
 
-  # client
+  # my api client can  call this functions
   def create_pledge(name, amount) do
     Servy.GenericServer.call(@name, {:create_pledge, name, amount})
   end
@@ -28,8 +28,7 @@ defmodule Servy.PledgeServer do
     {:ok, "pledge-#{:rand.uniform(1000)}"}
   end
 
-  # server
-
+  # server callbacks implemented
   def handle_cast(:clear, _state) do
     []
   end
