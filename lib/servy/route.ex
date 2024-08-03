@@ -1,10 +1,19 @@
 defmodule Servy.Route do
   @pages_path Path.expand("../../lib/pages", __DIR__)
 
+  alias Servy.PledgeController
   alias Servy.VideoCam
   alias Servy.BearController
   alias Servy.Api.BearController, as: Api
   alias Servy.Conv
+
+  def route(%Conv{method: "POST", path: "/pledges"} = conv) do
+    PledgeController.create(conv, conv.params)
+  end
+
+  def route(%Conv{method: "GET", path: "/pledges"} = conv) do
+    PledgeController.index(conv)
+  end
 
   def route(%{method: "GET", path: "/kaboom"}) do
     raise "Kaboom!"
