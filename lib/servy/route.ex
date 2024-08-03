@@ -20,17 +20,9 @@ defmodule Servy.Route do
   end
 
   def route(%{method: "GET", path: "/sensors"} = conv) do
-    task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
+    sensor_data = Servy.SensorServer.get_sensor_data()
 
-    snapshots =
-      ["cam-1", "cam-2", "cam-3"]
-      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
-      |> Enum.map(&Task.await/1)
-
-    # gps_bigfoot = Fetcher.get_result(pid_4)
-    gps_bigfoot = Task.await(task)
-
-    %Conv{conv | status: 200, resp_body: inspect({snapshots, gps_bigfoot})}
+    %Conv{conv | status: 200, resp_body: inspect({sensor_data})}
   end
 
   # old version with spawn
