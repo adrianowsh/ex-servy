@@ -1,7 +1,7 @@
 defmodule Servy.PledgeServer do
   alias Servy.State
 
-  @name :pledger_server
+  @name :pledge_server
 
   use GenServer
 
@@ -11,9 +11,9 @@ defmodule Servy.PledgeServer do
     {:ok, new_state}
   end
 
-  def start do
+  def start_link(_args) do
     IO.puts("Starting the pledge server...")
-    GenServer.start(__MODULE__, %State{}, name: @name)
+    GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   # my api client can  call this functions
@@ -79,15 +79,15 @@ defmodule Servy.PledgeServer do
   end
 end
 
-alias Servy.PledgeServer
+# alias Servy.PledgeServer
 
-{:ok, pid} = PledgeServer.start()
+# {:ok, pid} = PledgeServer.start()
 
-PledgeServer.set_cache_size(4)
-# send messages oto the process
-IO.inspect(PledgeServer.create_pledge("larry", 10))
+# PledgeServer.set_cache_size(4)
+# # send messages oto the process
+# IO.inspect(PledgeServer.create_pledge("larry", 10))
 
-send(pid, {:stop, "hammertime"})
+# send(pid, {:stop, "hammertime"})
 # PledgeServer.clear()
 
 # IO.inspect(PledgeServer.create_pledge("moe", 20))
@@ -95,6 +95,6 @@ send(pid, {:stop, "hammertime"})
 # IO.inspect(PledgeServer.create_pledge("daisy", 40))
 # IO.inspect(PledgeServer.create_pledge("grace", 50))
 
-IO.inspect(PledgeServer.recent_pledges())
-IO.inspect(PledgeServer.total_pledges())
-IO.inspect(Process.info(pid, :messages))
+# IO.inspect(PledgeServer.recent_pledges())
+# IO.inspect(PledgeServer.total_pledges())
+# IO.inspect(Process.info(pid, :messages))
